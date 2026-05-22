@@ -1,0 +1,3 @@
+
+cd /d E:\AI学习\opencode_works\kanban-board
+npm run dev
