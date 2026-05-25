@@ -944,6 +944,280 @@ VISUALIZERS['sum-diff'] = function (canvas, data) {
     }
 };
 
+// =============================================================
+//  11. 几何问题可视化
+// =============================================================
+VISUALIZERS.geometry = function (canvas, data) {
+    const w = 480, h = 240;
+    const ctx = setupCanvas(canvas, w, h);
+    clearCtx(ctx, w, h);
+
+    const cx = w / 2, cy = h / 2;
+
+    if (data.type === 'right-triangle') {
+        const a = data.a * 20, b = data.b * 14;
+        const ox = 80, oy = h - 50;
+        ctx.save();
+        ctx.strokeStyle = '#2c3e50';
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.moveTo(ox, oy);
+        ctx.lineTo(ox + b, oy);
+        ctx.lineTo(ox, oy - a);
+        ctx.closePath();
+        ctx.stroke();
+        ctx.fillStyle = 'rgba(52, 152, 219, 0.15)';
+        ctx.fill();
+        // 直角标记
+        ctx.strokeStyle = '#e74c3c';
+        ctx.lineWidth = 1.5;
+        ctx.beginPath();
+        ctx.moveTo(ox + 12, oy);
+        ctx.lineTo(ox + 12, oy - 12);
+        ctx.lineTo(ox, oy - 12);
+        ctx.stroke();
+        // 标注
+        drawLabel(ctx, `a=${data.a}cm`, ox - 20, oy - a / 2, '#e74c3c', 12);
+        drawLabel(ctx, `b=${data.b}cm`, ox + b / 2, oy + 20, '#3498db', 12);
+        drawLabel(ctx, `S=${data.area}cm²`, ox + b / 2, oy - a / 2, '#27ae60', 13);
+        ctx.restore();
+
+    } else if (data.type === 'rectangle') {
+        const l = data.l * 22, w_ = data.w * 22;
+        const ox = (w - l) / 2, oy = (h - w_) / 2;
+        ctx.save();
+        ctx.strokeStyle = '#2c3e50';
+        ctx.lineWidth = 2;
+        ctx.strokeRect(ox, oy, l, w_);
+        ctx.fillStyle = 'rgba(46, 204, 113, 0.12)';
+        ctx.fillRect(ox, oy, l, w_);
+        drawLabel(ctx, `${data.l}cm`, ox + l / 2, oy + w_ + 25, '#e74c3c', 13);
+        drawLabel(ctx, `${data.w}cm`, ox - 25, oy + w_ / 2, '#3498db', 13);
+        ctx.restore();
+
+    } else if (data.type === 'circle') {
+        const r = data.r * 18;
+        ctx.save();
+        ctx.strokeStyle = '#2c3e50';
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.arc(cx, cy, r, 0, Math.PI * 2);
+        ctx.stroke();
+        ctx.fillStyle = 'rgba(155, 89, 182, 0.1)';
+        ctx.fill();
+        // 半径
+        ctx.strokeStyle = '#e74c3c';
+        ctx.lineWidth = 1.5;
+        ctx.setLineDash([4, 3]);
+        ctx.beginPath();
+        ctx.moveTo(cx, cy);
+        ctx.lineTo(cx + r, cy);
+        ctx.stroke();
+        drawLabel(ctx, `r=${data.r}cm`, cx + r / 2, cy - 10, '#e74c3c', 13);
+        ctx.restore();
+
+    } else if (data.type === 'angle') {
+        const deg = data.deg;
+        const rad = deg * Math.PI / 180;
+        const r2 = 100;
+        const ox2 = 80, oy2 = h - 40;
+        ctx.save();
+        ctx.strokeStyle = '#2c3e50';
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.moveTo(ox2, oy2);
+        ctx.lineTo(ox2 + 150, oy2);
+        ctx.moveTo(ox2, oy2);
+        ctx.lineTo(ox2 + r2 * Math.cos(rad), oy2 - r2 * Math.sin(rad));
+        ctx.stroke();
+        // 弧
+        ctx.strokeStyle = '#e74c3c';
+        ctx.lineWidth = 1.5;
+        ctx.beginPath();
+        ctx.arc(ox2, oy2, 40, -rad, 0);
+        ctx.stroke();
+        drawLabel(ctx, `${deg}°`, ox2 + 50, oy2 - 20, '#e74c3c', 14);
+        drawLabel(ctx, `底角 = ${data.comp / 2}°`, ox2 + 100, oy2 + 20, '#27ae60', 13);
+        ctx.restore();
+
+    } else if (data.type === 'pythagorean') {
+        const a = data.a, b = data.b, c = data.c;
+        const scale2 = 15;
+        const ax = 80, ay = h - 40;
+        const bx = ax + b * scale2, by = ay;
+        const cx2 = ax, cy2 = ay - a * scale2;
+        ctx.save();
+        ctx.strokeStyle = '#2c3e50';
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.moveTo(ax, ay);
+        ctx.lineTo(bx, by);
+        ctx.lineTo(cx2, cy2);
+        ctx.closePath();
+        ctx.stroke();
+        ctx.fillStyle = 'rgba(52, 152, 219, 0.1)';
+        ctx.fill();
+        // 直角标记
+        ctx.strokeStyle = '#e74c3c';
+        ctx.lineWidth = 1.5;
+        ctx.beginPath();
+        ctx.moveTo(ax + 12, ay);
+        ctx.lineTo(ax + 12, ay - 12);
+        ctx.lineTo(ax, ay - 12);
+        ctx.stroke();
+        // 平方标注
+        const sqSize = 12;
+        const drawSquare = (x, y, label, col) => {
+            ctx.fillStyle = col + '40';
+            ctx.fillRect(x - sqSize / 2, y - sqSize / 2, sqSize, sqSize);
+            ctx.strokeStyle = col;
+            ctx.lineWidth = 1;
+            ctx.strokeRect(x - sqSize / 2, y - sqSize / 2, sqSize, sqSize);
+            drawLabel(ctx, label, x, y + 18, col, 11);
+        };
+        drawSquare(ax + (bx - ax) / 2, ay + sqSize / 2, `b²=${b*b}`, '#3498db');
+        drawSquare(ax - sqSize / 2, ay - (ay - cy2) / 2, `a²=${a*a}`, '#e74c3c');
+        drawLabel(ctx, `c²=${c.toFixed(2)}²=${(c*c).toFixed(2)}`, (ax + bx + cx2) / 3, (ay + by + cy2) / 3 - 30, '#27ae60', 13);
+        ctx.restore();
+
+    } else if (data.type === 'circle-chord') {
+        const r = data.r * 16;
+        const half = data.chord / 2 * 16;
+        const d = data.dist * 16 || Math.sqrt(r * r - half * half);
+        ctx.save();
+        ctx.strokeStyle = '#2c3e50';
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.arc(cx, cy, r, 0, Math.PI * 2);
+        ctx.stroke();
+        // 弦
+        const chordY = cy - d;
+        const chordW = Math.sqrt(r * r - d * d);
+        ctx.strokeStyle = '#e74c3c';
+        ctx.lineWidth = 2.5;
+        ctx.beginPath();
+        ctx.moveTo(cx - chordW, chordY);
+        ctx.lineTo(cx + chordW, chordY);
+        ctx.stroke();
+        // 垂线
+        ctx.strokeStyle = '#3498db';
+        ctx.setLineDash([5, 4]);
+        ctx.lineWidth = 1.5;
+        ctx.beginPath();
+        ctx.moveTo(cx, cy);
+        ctx.lineTo(cx, chordY);
+        ctx.stroke();
+        drawLabel(ctx, `d=${data.dist}cm`, cx + 15, (cy + chordY) / 2, '#3498db', 12);
+        drawLabel(ctx, `弦长=${data.chord}cm`, cx, chordY - 15, '#e74c3c', 12);
+        drawLabel(ctx, `R=${data.r}cm`, cx + r / 2 + 5, cy, '#27ae60', 12);
+        ctx.restore();
+
+    } else if (data.type === 'similar') {
+        const h1 = data.h1 * 12, s1 = data.shadow * 8;
+        const ox3 = 60, oy3 = h - 40;
+        ctx.save();
+        // 旗杆
+        ctx.fillStyle = '#8B4513';
+        ctx.fillRect(ox3 + 10, oy3 - h1, 6, h1);
+        ctx.fillStyle = '#27ae60';
+        ctx.beginPath();
+        ctx.arc(ox3 + 13, oy3 - h1, 6, 0, Math.PI * 2);
+        ctx.fill();
+        // 影子
+        ctx.strokeStyle = 'rgba(0,0,0,0.2)';
+        ctx.lineWidth = 1.5;
+        ctx.setLineDash([4, 4]);
+        ctx.beginPath();
+        ctx.moveTo(ox3 + 13, oy3);
+        ctx.lineTo(ox3 + 13 + s1, oy3);
+        ctx.stroke();
+        drawLabel(ctx, `${data.h1}m`, ox3 + 25, oy3 - h1 / 2, '#e74c3c', 12);
+        drawLabel(ctx, `${data.shadow}m`, ox3 + 13 + s1 / 2, oy3 + 20, '#3498db', 12);
+        ctx.restore();
+
+    } else if (data.type === 'equilateral') {
+        const s = data.sides * 15;
+        const h3 = s * Math.sqrt(3) / 2;
+        const ox4 = (w - s) / 2, oy4 = (h - h3) / 2 + h3;
+        ctx.save();
+        ctx.strokeStyle = '#2c3e50';
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.moveTo(ox4, oy4);
+        ctx.lineTo(ox4 + s, oy4);
+        ctx.lineTo(ox4 + s / 2, oy4 - h3);
+        ctx.closePath();
+        ctx.stroke();
+        ctx.fillStyle = 'rgba(231, 76, 60, 0.08)';
+        ctx.fill();
+        drawLabel(ctx, `${data.name}`, ox4 + s / 2, oy4 - h3 - 15, '#e74c3c', 14);
+        drawLabel(ctx, `a=${data.sides}cm`, ox4 + s / 2, oy4 + 22, '#2c3e50', 13);
+        // 高
+        ctx.setLineDash([4, 3]);
+        ctx.strokeStyle = '#3498db';
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        ctx.moveTo(ox4 + s / 2, oy4);
+        ctx.lineTo(ox4 + s / 2, oy4 - h3);
+        ctx.stroke();
+        drawLabel(ctx, `h≈${h3.toFixed(1)}cm`, ox4 + s / 2 + 18, oy4 - h3 / 2, '#3498db', 11);
+        ctx.restore();
+
+    } else if (data.type === 'cuboid') {
+        const a2 = data.a * 14, b2 = data.b * 10, h4 = data.h * 12;
+        const ox5 = (w - a2 - b2 / 2) / 2, oy5 = (h - h4 - b2 / 2) / 2;
+        const dx = b2 / 2, dy = b2 / 3;
+        ctx.save();
+        // 前后面
+        ctx.strokeStyle = '#2c3e50';
+        ctx.lineWidth = 1.5;
+        // 前面
+        ctx.strokeRect(ox5, oy5, a2, h4);
+        // 后面
+        ctx.strokeRect(ox5 + dx, oy5 - dy, a2, h4);
+        // 连接线
+        ctx.beginPath();
+        ctx.moveTo(ox5, oy5); ctx.lineTo(ox5 + dx, oy5 - dy);
+        ctx.moveTo(ox5 + a2, oy5); ctx.lineTo(ox5 + a2 + dx, oy5 - dy);
+        ctx.moveTo(ox5, oy5 + h4); ctx.lineTo(ox5 + dx, oy5 + h4 - dy);
+        ctx.moveTo(ox5 + a2, oy5 + h4); ctx.lineTo(ox5 + a2 + dx, oy5 + h4 - dy);
+        ctx.stroke();
+        // 标注
+        drawLabel(ctx, `${data.a}cm`, ox5 + a2 / 2, oy5 + h4 + 20, '#e74c3c', 12);
+        drawLabel(ctx, `${data.h}cm`, ox5 - 22, oy5 + h4 / 2, '#3498db', 12);
+        drawLabel(ctx, `${data.b}cm`, ox5 + a2 + 18, oy5 - dy / 2, '#27ae60', 12);
+        ctx.restore();
+
+    } else if (data.type === 'position') {
+        const r = data.r * 25;
+        const offsetX = data.cx * 20, offsetY = data.cy * -20;
+        const centerX = cx + offsetX, centerY = cy + offsetY;
+        const px = cx + data.px * 20, py = cy + data.py * -20;
+        ctx.save();
+        ctx.strokeStyle = '#2c3e50';
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.arc(centerX, centerY, r, 0, Math.PI * 2);
+        ctx.stroke();
+        ctx.fillStyle = 'rgba(52, 152, 219, 0.1)';
+        ctx.fill();
+        // 圆心
+        ctx.fillStyle = '#e74c3c';
+        ctx.beginPath();
+        ctx.arc(centerX, centerY, 5, 0, Math.PI * 2);
+        ctx.fill();
+        drawLabel(ctx, `O(${data.cx},${data.cy})`, centerX, centerY + r + 20, '#e74c3c', 12);
+        // 点P
+        const col = data.dist > data.r ? '#e74c3c' : data.dist === data.r ? '#f39c12' : '#27ae60';
+        ctx.fillStyle = col;
+        ctx.beginPath();
+        ctx.arc(px, py, 5, 0, Math.PI * 2);
+        ctx.fill();
+        drawLabel(ctx, `P(${data.px},${data.py})`, px + 15, py - 10, col, 12);
+        ctx.restore();
+    }
+};
+
 // ---------- 主入口 ----------
 function renderVisualization(canvas, problem) {
     if (!canvas || !problem) return;

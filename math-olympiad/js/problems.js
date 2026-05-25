@@ -10,16 +10,29 @@ function uid() { return '_' + Math.random().toString(36).slice(2, 8); }
 
 // ---------- 题型元信息 ----------
 const CATEGORIES = [
-    { id: 'distance',        name: '路程问题', icon: '🚗', desc: '速度、时间、路程关系；相遇与追及问题' },
-    { id: 'sequence',        name: '等比数列', icon: '📊', desc: '等比数列通项、求和与实际应用' },
-    { id: 'concentration',   name: '浓度问题', icon: '🧪', desc: '溶液浓度计算、混合与稀释' },
-    { id: 'cowgrass',        name: '牛吃草问题', icon: '🐄', desc: '牛顿问题：草匀速生长，牛定量消耗' },
-    { id: 'work',            name: '工程问题', icon: '🔧', desc: '工作效率、合作与交替工作' },
-    { id: 'chicken-rabbit',  name: '鸡兔同笼', icon: '🐔', desc: '头脚计数问题及扩展' },
-    { id: 'profit-loss',     name: '盈亏问题', icon: '⚖️', desc: '分配剩余与不足' },
-    { id: 'tree-planting',   name: '植树问题', icon: '🌲', desc: '直线与环形植树、间隔计算' },
-    { id: 'age',             name: '年龄问题', icon: '👨‍👩‍👧‍👦', desc: '年龄差不变下的倍数关系' },
-    { id: 'sum-diff',        name: '和差倍问题', icon: '🔢', desc: '和、差、倍数综合推理' },
+    { id: 'geometry',        name: '几何问题', icon: '📐', desc: '平面几何、立体几何、角度与面积计算（支持草稿画板）',
+      schoolLevels: { '普通': '初中', '进阶': '高中', '挑战': '高中' },
+      hasScratchpad: true },
+    { id: 'distance',        name: '路程问题', icon: '🚗', desc: '速度、时间、路程关系；相遇与追及问题',
+      schoolLevels: { '普通': '小学', '进阶': '初中', '挑战': '高中' } },
+    { id: 'sequence',        name: '等比数列', icon: '📊', desc: '等比数列通项、求和与实际应用',
+      schoolLevels: { '普通': '初中', '进阶': '高中', '挑战': '高中' } },
+    { id: 'concentration',   name: '浓度问题', icon: '🧪', desc: '溶液浓度计算、混合与稀释',
+      schoolLevels: { '普通': '小学', '进阶': '初中', '挑战': '高中' } },
+    { id: 'cowgrass',        name: '牛吃草问题', icon: '🐄', desc: '牛顿问题：草匀速生长，牛定量消耗',
+      schoolLevels: { '普通': '小学', '进阶': '初中', '挑战': '高中' } },
+    { id: 'work',            name: '工程问题', icon: '🔧', desc: '工作效率、合作与交替工作',
+      schoolLevels: { '普通': '小学', '进阶': '初中', '挑战': '高中' } },
+    { id: 'chicken-rabbit',  name: '鸡兔同笼', icon: '🐔', desc: '头脚计数问题及扩展',
+      schoolLevels: { '普通': '小学', '进阶': '小学', '挑战': '初中' } },
+    { id: 'profit-loss',     name: '盈亏问题', icon: '⚖️', desc: '分配剩余与不足',
+      schoolLevels: { '普通': '小学', '进阶': '小学', '挑战': '初中' } },
+    { id: 'tree-planting',   name: '植树问题', icon: '🌲', desc: '直线与环形植树、间隔计算',
+      schoolLevels: { '普通': '小学', '进阶': '小学', '挑战': '初中' } },
+    { id: 'age',             name: '年龄问题', icon: '👨‍👩‍👧‍👦', desc: '年龄差不变下的倍数关系',
+      schoolLevels: { '普通': '小学', '进阶': '小学', '挑战': '初中' } },
+    { id: 'sum-diff',        name: '和差倍问题', icon: '🔢', desc: '和、差、倍数综合推理',
+      schoolLevels: { '普通': '小学', '进阶': '小学', '挑战': '初中' } },
 ];
 
 // ---------- 生成器注册表 ----------
@@ -60,8 +73,7 @@ function genDistanceEasy() {
 
 function genDistanceMedium() {
     const v1 = pick([30, 40, 45, 50, 55, 60]);
-    const v2 = pick([35, 45, 50, 55, 60, 70]);
-    while (v2 === v1) {} // not needed but harmless
+    const v2 = pick([35, 40, 50, 55, 65, 70]);
     const s = pick([180, 200, 240, 280, 300, 360, 400]);
     const t = s / (v1 + v2);
     const tNice = Math.round(t * 10) / 10;
@@ -812,18 +824,264 @@ function genSDHard() {
 }
 
 // =============================================================
+//  11. 几何问题
+// =============================================================
+GENERATORS.geometry = {
+    name: '几何问题',
+    generate: function (difficulty) {
+        if (difficulty === '普通') return genGeoEasy();
+        if (difficulty === '进阶') return genGeoMedium();
+        return genGeoHard();
+    }
+};
+
+function genGeoEasy() {
+    const type = pick(['triangle', 'rectangle', 'circle', 'angle']);
+    if (type === 'triangle') {
+        const a = pick([3, 4, 5, 6, 8]);
+        const b = pick([4, 5, 6, 8, 10]);
+        const area = Math.round(a * b / 2 * 10) / 10;
+        return {
+            question: `一个直角三角形的两条直角边分别为 ${a}cm 和 ${b}cm，求这个三角形的面积。`,
+            solutionSteps: [
+                `直角三角形面积 = 直角边₁ × 直角边₂ ÷ 2`,
+                `= ${a} × ${b} ÷ 2 = ${a * b} ÷ 2 = ${area} cm²`,
+                `答：三角形面积为 ${area} 平方厘米。`
+            ],
+            answer: `${area} cm²`,
+            visualizationType: 'geometry',
+            vizData: { type: 'right-triangle', a, b, area }
+        };
+    } else if (type === 'rectangle') {
+        const l = rand(5, 15);
+        const w = rand(3, 10);
+        return {
+            question: `一个长方形的长为 ${l}cm，宽为 ${w}cm，求它的周长和面积。`,
+            solutionSteps: [
+                `周长 = 2 × (长 + 宽) = 2 × (${l} + ${w}) = 2 × ${l + w} = ${2 * (l + w)} cm`,
+                `面积 = 长 × 宽 = ${l} × ${w} = ${l * w} cm²`
+            ],
+            answer: `周长 ${2 * (l + w)} cm，面积 ${l * w} cm²`,
+            visualizationType: 'geometry',
+            vizData: { type: 'rectangle', l, w }
+        };
+    } else if (type === 'circle') {
+        const r = pick([3, 4, 5, 6, 7, 8]);
+        const area = Math.round(Math.PI * r * r * 100) / 100;
+        const circ = Math.round(2 * Math.PI * r * 100) / 100;
+        return {
+            question: `一个圆的半径为 ${r}cm，求它的周长和面积。（π 取 3.14）`,
+            solutionSteps: [
+                `周长 = 2πr = 2 × 3.14 × ${r} = ${circ} cm`,
+                `面积 = πr² = 3.14 × ${r}² = 3.14 × ${r * r} = ${area} cm²`
+            ],
+            answer: `周长 ${circ} cm，面积 ${area} cm²`,
+            visualizationType: 'geometry',
+            vizData: { type: 'circle', r, area, circ }
+        };
+    } else {
+        const deg = pick([30, 45, 60, 90, 120]);
+        const comp = 180 - deg;
+        return {
+            question: `一个三角形中，一个角为 ${deg}°，另外两个角相等，求这两个角的度数。`,
+            solutionSteps: [
+                `三角形内角和 = 180°`,
+                `另外两个角之和 = 180° - ${deg}° = ${comp}°`,
+                `每个角 = ${comp}° ÷ 2 = ${comp / 2}°`
+            ],
+            answer: `${comp / 2}°`,
+            visualizationType: 'geometry',
+            vizData: { type: 'angle', deg, comp }
+        };
+    }
+}
+
+function genGeoMedium() {
+    const type = pick(['pythagorean', 'circle-theorem', 'similar-triangle']);
+    if (type === 'pythagorean') {
+        const a = pick([3, 5, 6, 7, 8, 9, 10]);
+        const b = pick([4, 6, 8, 9, 10, 12, 15]);
+        const c = Math.round(Math.sqrt(a * a + b * b) * 100) / 100;
+        return {
+            question: `直角三角形两条直角边分别为 ${a}cm 和 ${b}cm，求斜边长。（结果保留两位小数）`,
+            solutionSteps: [
+                `勾股定理：a² + b² = c²`,
+                `c² = ${a}² + ${b}² = ${a * a} + ${b * b} = ${a * a + b * b}`,
+                `c = √(${a * a + b * b}) ≈ ${c} cm`
+            ],
+            answer: `${c} cm`,
+            visualizationType: 'geometry',
+            vizData: { type: 'pythagorean', a, b, c }
+        };
+    } else if (type === 'circle-theorem') {
+        const r = pick([4, 5, 6, 8, 10]);
+        const chord = pick([6, 8, 10, 12]);
+        const halfChord = chord / 2;
+        const dist = Math.round(Math.sqrt(r * r - halfChord * halfChord) * 10) / 10;
+        return {
+            question: `在半径为 ${r}cm 的圆中，一条弦长为 ${chord}cm，求圆心到弦的距离。`,
+            solutionSteps: [
+                `圆心到弦的垂线平分弦，形成直角三角形`,
+                `斜边 = 半径 = ${r}，一条直角边 = 弦长的一半 = ${halfChord}`,
+                `距离 = √(${r}² - ${halfChord}²) = √(${r * r} - ${halfChord * halfChord}) = √${r * r - halfChord * halfChord} ≈ ${dist} cm`
+            ],
+            answer: `${dist} cm`,
+            visualizationType: 'geometry',
+            vizData: { type: 'circle-chord', r, chord, dist }
+        };
+    } else {
+        const h1 = pick([4, 5, 6, 8]);
+        const shadow = pick([6, 8, 10, 12]);
+        const h2 = Math.round(shadow / (shadow / h1) * 10) / 10;
+        const ratio = Math.round(shadow / h1 * 10) / 10;
+        return {
+            question: `在同一时刻，一根 ${h1}m 高的旗杆影子长 ${shadow}m，旁边一棵树影子长 ${shadow + 3}m，求树高。`,
+            solutionSteps: [
+                `相似三角形：物高与影长成正比`,
+                `比例 = 影长 ÷ 物高 = ${shadow} ÷ ${h1} = ${ratio}`,
+                `树高 = 树影长 ÷ 比例 = ${shadow + 3} ÷ ${ratio} ≈ ${Math.round((shadow + 3) / ratio * 10) / 10} m`
+            ],
+            answer: `${Math.round((shadow + 3) / ratio * 10) / 10} m`,
+            visualizationType: 'geometry',
+            vizData: { type: 'similar', h1, shadow, ratio }
+        };
+    }
+}
+
+function genGeoHard() {
+    const type = pick(['triangle-proof', 'solid-geo', 'analytic']);
+    if (type === 'triangle-proof') {
+        const sides = pick([3, 4, 5, 5, 6, 7, 8, 10]);
+        const area = Math.round(Math.sqrt(3) / 4 * sides * sides * 100) / 100;
+        const name = pick(['ABC', 'DEF', 'XYZ']);
+        const aLabel = name[0], bLabel = name[1], cLabel = name[2];
+        return {
+            question: `在正三角形 ${name} 中，边长为 ${sides}cm，求三角形 ${name} 的面积以及外接圆半径。`,
+            solutionSteps: [
+                `正三角形面积 = √3/4 × a² = √3/4 × ${sides}²`,
+                `= √3/4 × ${sides * sides} = ${area} cm²`,
+                `外接圆半径 R = a/√3 = ${sides}/√3 ≈ ${Math.round(sides / Math.sqrt(3) * 100) / 100} cm`
+            ],
+            answer: `面积 ${area} cm²，外接圆半径 ${Math.round(sides / Math.sqrt(3) * 100) / 100} cm`,
+            visualizationType: 'geometry',
+            vizData: { type: 'equilateral', sides, area, name }
+        };
+    } else if (type === 'solid-geo') {
+        const a = pick([3, 4, 5, 6]);
+        const b = pick([4, 5, 6, 8]);
+        const h = pick([5, 6, 8, 10]);
+        const vol = a * b * h;
+        const surface = 2 * (a * b + a * h + b * h);
+        return {
+            question: `一个长方体的长宽高分别为 ${a}cm、${b}cm、${h}cm，求它的体积和表面积。`,
+            solutionSteps: [
+                `体积 = 长 × 宽 × 高 = ${a} × ${b} × ${h} = ${vol} cm³`,
+                `表面积 = 2(长×宽 + 长×高 + 宽×高)`,
+                `= 2(${a}×${b} + ${a}×${h} + ${b}×${h}) = 2(${a * b} + ${a * h} + ${b * h})`,
+                `= 2 × ${a * b + a * h + b * h} = ${surface} cm²`
+            ],
+            answer: `体积 ${vol} cm³，表面积 ${surface} cm²`,
+            visualizationType: 'geometry',
+            vizData: { type: 'cuboid', a, b, h, vol, surface }
+        };
+    } else {
+        const cx = pick([1, 2, 3, -1, -2]);
+        const cy = pick([1, 2, 3, -1, -2]);
+        const r = pick([2, 3, 4, 5]);
+        const px = cx + rand(-3, 3);
+        const py = cy + rand(-3, 3);
+        const dist = Math.round(Math.sqrt((px - cx) ** 2 + (py - cy) ** 2) * 100) / 100;
+        return {
+            question: `已知圆心在 (${cx}, ${cy})，半径为 ${r} 的圆，判断点 P(${px}, ${py}) 与圆的位置关系。`,
+            solutionSteps: [
+                `点P到圆心距离 d = √((${px} - ${cx})² + (${py} - ${cy})²)`,
+                `d = √(${px - cx}² + ${py - cy}²) = √(${(px - cx) ** 2} + ${(py - cy) ** 2}) = √${(px - cx) ** 2 + (py - cy) ** 2} ≈ ${dist}`,
+                `圆半径 r = ${r}`,
+                `因为 d ${dist > r ? '>' : dist === r ? '=' : '<'} r，所以点P在圆${dist > r ? '外' : dist === r ? '上' : '内'}`
+            ],
+            answer: `点P在圆${dist > r ? '外' : dist === r ? '上' : '内'}（d=${dist}, r=${r}）`,
+            visualizationType: 'geometry',
+            vizData: { type: 'position', cx, cy, r, px, py, dist }
+        };
+    }
+}
+
+// ---------- 自定义题目管理 ----------
+const customProblems = [];
+
+function loadCustomProblems() {
+    try {
+        const saved = localStorage.getItem('olympiad_custom_problems');
+        if (saved) {
+            const parsed = JSON.parse(saved);
+            customProblems.length = 0;
+            customProblems.push(...parsed);
+        }
+    } catch (e) { /* ignore */ }
+}
+
+function saveCustomProblems() {
+    try {
+        localStorage.setItem('olympiad_custom_problems', JSON.stringify(customProblems));
+    } catch (e) { /* ignore */ }
+}
+
+function addCustomProblem(data) {
+    const p = {
+        id: 'custom_' + uid(),
+        type: data.categoryName,
+        typeId: data.categoryId || 'custom',
+        difficulty: data.difficulty,
+        schoolLevel: data.schoolLevel,
+        question: data.question,
+        solutionSteps: data.solutionSteps.split('\n').filter(s => s.trim()),
+        answer: data.answer,
+        visualizationType: null,
+        vizData: null,
+        showSolution: false,
+        isCustom: true,
+        hasScratchpad: data.hasScratchpad || false,
+        createdAt: Date.now()
+    };
+    customProblems.push(p);
+    saveCustomProblems();
+    return p;
+}
+
+function removeCustomProblem(id) {
+    const idx = customProblems.findIndex(p => p.id === id);
+    if (idx >= 0) {
+        customProblems.splice(idx, 1);
+        saveCustomProblems();
+    }
+}
+
+function getCustomProblemsForCategory(catId) {
+    return customProblems.filter(p => p.typeId === catId);
+}
+
+// =============================================================
 //  批量生成接口
 // =============================================================
+function getSchoolLevel(catId, difficulty) {
+    const cat = CATEGORIES.find(c => c.id === catId);
+    if (cat && cat.schoolLevels && cat.schoolLevels[difficulty]) {
+        return cat.schoolLevels[difficulty];
+    }
+    return '小学';
+}
+
 function generateProblemsForCategory(catId, difficultyFilter) {
     const gen = GENERATORS[catId];
     if (!gen) return [];
     const difficulties = difficultyFilter === 'all'
         ? ['普通', '进阶', '挑战']
         : [difficultyFilter];
+    const cat = CATEGORIES.find(c => c.id === catId);
+    const hasScratchpad = cat && cat.hasScratchpad;
 
     const results = [];
     difficulties.forEach(diff => {
-        // 每个难度生成 2-3 题
         const count = rand(2, 3);
         for (let i = 0; i < count; i++) {
             const p = gen.generate(diff);
@@ -832,15 +1090,26 @@ function generateProblemsForCategory(catId, difficultyFilter) {
                 type: gen.name,
                 typeId: catId,
                 difficulty: diff,
+                schoolLevel: getSchoolLevel(catId, diff),
                 question: p.question,
                 solutionSteps: p.solutionSteps,
                 answer: p.answer,
                 visualizationType: p.visualizationType,
                 vizData: p.vizData,
-                showSolution: false
+                showSolution: false,
+                hasScratchpad: hasScratchpad
             });
         }
     });
+
+    // 混入自定义题目
+    const customs = getCustomProblemsForCategory(catId);
+    customs.forEach(p => {
+        if (difficultyFilter === 'all' || p.difficulty === difficultyFilter) {
+            results.push(p);
+        }
+    });
+
     return results;
 }
 
