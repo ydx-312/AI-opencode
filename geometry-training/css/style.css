@@ -1,0 +1,96 @@
+﻿* { margin:0; padding:0; box-sizing:border-box }
+:root {
+  --primary: #4f46e5; --primary-light: #818cf8; --primary-dark: #3730a3;
+  --secondary: #f59e0b; --success: #10b981; --danger: #ef4444;
+  --bg: #f8fafc; --card: #fff; --text: #1e293b; --text-light: #64748b;
+  --border: #e2e8f0; --shadow: 0 1px 3px rgba(0,0,0,.1);
+  --shadow-lg: 0 10px 15px -3px rgba(0,0,0,.1);
+  --radius: 12px; --radius-sm: 8px;
+  --font: 'Segoe UI',-apple-system,BlinkMacSystemFont,'PingFang SC','Microsoft YaHei',sans-serif
+}
+body { font-family:var(--font); background:var(--bg); color:var(--text); min-height:100vh }
+.app-header {
+  background:linear-gradient(135deg,var(--primary),var(--primary-dark));
+  color:#fff; padding:16px 24px; display:flex; align-items:center;
+  justify-content:space-between; box-shadow:var(--shadow-lg);
+  position:sticky; top:0; z-index:100
+}
+.app-header h1 { font-size:22px; font-weight:700; letter-spacing:1px }
+.app-header h1 span { color:var(--secondary) }
+.app-header .subtitle { font-size:13px; opacity:.85 }
+.app-container { display:flex; max-width:1400px; margin:0 auto; min-height:calc(100vh - 60px) }
+.sidebar {
+  width:240px; flex-shrink:0; background:var(--card);
+  border-right:1px solid var(--border); padding:16px 0;
+  overflow-y:auto; position:sticky; top:60px; height:calc(100vh - 60px)
+}
+.sidebar-title { font-size:12px; font-weight:600; text-transform:uppercase; color:var(--text-light); padding:8px 20px 12px; letter-spacing:1px }
+.sidebar-item { display:flex; align-items:center; gap:10px; padding:10px 20px; cursor:pointer; transition:all .2s; border-left:3px solid transparent; font-size:14px; color:var(--text) }
+.sidebar-item:hover { background:#f1f5f9 }
+.sidebar-item.active { background:#eef2ff; border-left-color:var(--primary); color:var(--primary); font-weight:600 }
+.sidebar-item .icon { width:28px; height:28px; display:flex; align-items:center; justify-content:center; border-radius:6px; font-size:16px }
+.sidebar-item .count { margin-left:auto; font-size:11px; color:var(--text-light); background:var(--bg); padding:2px 8px; border-radius:10px }
+.main-content { flex:1; padding:24px 32px; overflow-y:auto }
+.category-header { margin-bottom:24px }
+.category-header h2 { font-size:26px; font-weight:700; margin-bottom:6px }
+.category-header p { color:var(--text-light); font-size:14px }
+.diff-tabs { display:flex; gap:8px; margin-bottom:24px; border-bottom:2px solid var(--border); padding-bottom:0 }
+.diff-tab {
+  padding:10px 24px; cursor:pointer; border:none; background:none;
+  font-size:14px; font-weight:600; color:var(--text-light);
+  border-bottom:3px solid transparent; margin-bottom:-2px;
+  transition:all .2s; font-family:var(--font)
+}
+.diff-tab:hover { color:var(--text) }
+.diff-tab.active { color:var(--primary); border-bottom-color:var(--primary) }
+.diff-tab .badge { display:inline-block; margin-left:6px; font-size:11px; padding:1px 6px; border-radius:4px; font-weight:600 }
+.diff-tab[data-diff= easy] .badge { background:#d1fae5; color:#065f46 }
+.diff-tab[data-diff= medium] .badge { background:#fef3c7; color:#92400e }
+.diff-tab[data-diff= hard] .badge { background:#fee2e2; color:#991b1b }
+.problems-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(480px,1fr)); gap:20px }
+.problem-card { background:var(--card); border-radius:var(--radius); box-shadow:var(--shadow); overflow:hidden; transition:box-shadow .3s; border:1px solid var(--border) }
+.problem-card:hover { box-shadow:var(--shadow-lg) }
+.problem-card .card-header { padding:16px 20px 12px; display:flex; align-items:center; justify-content:space-between; border-bottom:1px solid var(--border) }
+.problem-card .card-header .num { font-weight:700; font-size:14px; color:var(--primary) }
+.problem-card .card-header .diff-label { font-size:12px; padding:2px 10px; border-radius:10px; font-weight:600 }
+.diff-label.easy { background:#d1fae5; color:#065f46 }
+.diff-label.medium { background:#fef3c7; color:#92400e }
+.diff-label.hard { background:#fee2e2; color:#991b1b }
+.problem-card .card-body { padding:16px 20px }
+.problem-card .card-body .question { font-size:15px; line-height:1.7; margin-bottom:12px }
+.problem-card .card-body .question strong { color:var(--primary) }
+.problem-card .canvas-wrap { width:100%; aspect-ratio:4/3; background:#fafbfc; border-radius:var(--radius-sm); border:1px solid var(--border); overflow:hidden; margin-bottom:12px; position:relative }
+.problem-card .canvas-wrap canvas { width:100%; height:100%; display:block }
+.solution-area { margin-top:12px }
+.solution-toggle {
+  background:none; border:1px dashed var(--border); padding:8px 16px;
+  border-radius:var(--radius-sm); cursor:pointer; font-size:13px;
+  color:var(--text-light); transition:all .2s; width:100%;
+  text-align:center; font-family:var(--font); font-weight:500
+}
+.solution-toggle:hover { border-color:var(--primary-light); color:var(--primary); background:#f8faff }
+.solution-toggle .arrow { display:inline-block; transition:transform .3s; margin-left:4px }
+.solution-toggle.open .arrow { transform:rotate(180deg) }
+.solution-content { display:none; padding:16px; background:#f8fafc; border-radius:var(--radius-sm); margin-top:8px; border-left:3px solid var(--primary-light) }
+.solution-content.open { display:block }
+.solution-content .thought { font-size:14px; line-height:1.8; color:var(--text) }
+.solution-content .thought .step { display:block; padding:4px 0; padding-left:20px; position:relative }
+.solution-content .thought .step::before { content:'\25B8'; position:absolute; left:0; color:var(--primary-light) }
+.solution-content .answer { margin-top:10px; padding:10px 16px; background:#eef2ff; border-radius:6px; font-weight:600; font-size:15px; color:var(--primary-dark) }
+@media (max-width:1024px) { .sidebar { width:200px } .problems-grid { grid-template-columns:1fr } }
+@media (max-width:768px) {
+  .sidebar { display:none }
+  .sidebar.mobile-open { display:block; position:fixed; top:60px; left:0; width:280px; z-index:200; box-shadow:var(--shadow-lg) }
+  .main-content { padding:16px }
+  .app-header h1 { font-size:18px }
+  .problems-grid { grid-template-columns:1fr; min-width:0 }
+  .mobile-menu-btn { display:flex !important }
+}
+.mobile-menu-btn { display:none; background:none; border:none; color:#fff; font-size:24px; cursor:pointer; padding:4px }
+.sidebar-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,.3); z-index:150 }
+.sidebar-overlay.open { display:block }
+::-webkit-scrollbar { width:6px }
+::-webkit-scrollbar-track { background:0 0 }
+::-webkit-scrollbar-thumb { background:#cbd5e1; border-radius:3px }
+::-webkit-scrollbar-thumb:hover { background:#94a3b8 }
+@media print { .sidebar,.app-header { display:none } .main-content { padding:0 } .problem-card { break-inside:avoid } }
