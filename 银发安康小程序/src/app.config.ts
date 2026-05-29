@@ -1,0 +1,35 @@
+export default defineAppConfig({
+  pages: [
+    'pages/welcome/index',
+    'pages/login/index',
+    'pages/home/index',
+    'pages/caregivers/index',
+    'pages/caregiverDetail/index',
+    'pages/careTracking/index',
+    'pages/messages/index',
+    'pages/reviews/index',
+    'pages/healthRecords/index',
+    'pages/profile/index',
+    'pages/settings/index',
+    'pages/admin/caregivers/index',
+    'pages/admin/requests/index',
+  ],
+  window: {
+    navigationBarTitleText: '银发安康',
+    navigationBarBackgroundColor: '#4CAF50',
+    navigationBarTextStyle: 'white',
+    backgroundColor: '#f5f5f5',
+    pageOrientation: 'portrait',
+  },
+  tabBar: {
+    color: '#999',
+    selectedColor: '#4CAF50',
+    backgroundColor: '#fff',
+    list: [
+      { pagePath: 'pages/home/index', text: '首页', iconPath: 'assets/home.png', selectedIconPath: 'assets/home-active.png' },
+      { pagePath: 'pages/caregivers/index', text: '找护工', iconPath: 'assets/caregiver.png', selectedIconPath: 'assets/caregiver-active.png' },
+      { pagePath: 'pages/messages/index', text: '消息', iconPath: 'assets/message.png', selectedIconPath: 'assets/message-active.png' },
+      { pagePath: 'pages/profile/index', text: '我的', iconPath: 'assets/profile.png', selectedIconPath: 'assets/profile-active.png' },
+    ],
+  },
+})

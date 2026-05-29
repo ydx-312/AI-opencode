@@ -1,0 +1,16 @@
+{
+  "appId": "com.yinfaankang.app",
+  "appName": "银发安康",
+  "webDir": "dist",
+  "bundledWebRuntime": false,
+  "server": {
+    "androidScheme": "https"
+  },
+  "ios": {
+    "contentInset": "always",
+    "scrollEnabled": true
+  },
+  "android": {
+    "allowMixedContent": true
+  }
+}
